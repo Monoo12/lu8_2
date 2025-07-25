@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Mi Amorcito ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            perspective: 1000px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .envelope {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .envelope:hover {
+            transform: scale(1.05);
+        }
+
+        .envelope-base {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(145deg, #f4f1de, #e8e5d0);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .envelope-flap {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(145deg, #e8e5d0, #ddd9c4);
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top center;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .envelope.opened .envelope-flap {
+            transform: rotateX(-180deg);
+        }
+
+        .letter {
+            width: 90%;
+            background: #fefefe;
+            border-radius: 6px;
+            position: absolute;
+            top: 20px;
+            left: 5%;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(100px) scale(0.8);
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 0;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .envelope.opened .letter {
+            transform: translateY(-30px) scale(1);
+            opacity: 1;
+            z-index: 3;
+        }
+
+        .letter-content {
+            color: #2c3e50;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .letter-title {
+            color: #e74c3c;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .letter-signature {
+            text-align: right;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #8e44ad;
+        }
+
+        .heart-decoration {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #e74c3c;
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        .click-hint {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            font-size: 16px;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .envelope.opened .click-hint {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: rgba(231, 76, 60, 0.3);
+            font-size: 20px;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            z-index: 10;
+        }
+
+        .envelope.opened .close-btn {
+            opacity: 1;
+        }
+
+        .audio-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .audio-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .audio-btn:hover {
+            background: rgba(231, 76, 60, 1);
+            transform: scale(1.1);
+        }
+
+        .audio-btn:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 480px) {
+            .letter-content {
+                font-size: 13px;
+            }
+            
+            .letter-title {
+                font-size: 16px;
+            }
+            
+            .container {
+                max-width: 350px;
+            }
+            
+            .audio-controls {
+                top: 15px;
+                right: 15px;
+            }
+            
+            .audio-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio de fondo -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="musica-romantica.mp3" type="audio/mpeg">
+        <source src="musica-romantica.wav" type="audio/wav">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+    
+    <!-- Controles de audio -->
+    <div class="audio-controls">
+        <button id="playPauseBtn" class="audio-btn" title="Música">🎵</button>
+    </div>
+    
+    <div class="floating-hearts" id="heartsContainer"></div>
+    
+    <div class="container">
+        <div class="envelope" id="envelope">
+            <div class="envelope-base">
+                <div class="heart-decoration">💕</div>
+            </div>
+            <div class="envelope-flap"></div>
+            
+            <div class="letter" id="letter">
+                <button class="close-btn" id="closeBtn">×</button>
+                <div class="letter-content">
+                    <div class="letter-title">Mi amorcito</div>
+                    
+                    <p>fua hace cuanto no te escribia una carta… bueno la cuestion es queeee te amo muchote! Nose como paso todo esto me enamoraste descaradamente, sos la persona que me hace sentir lo que nadie puede, la que me hace feliz cuando estoy triste, que me sostiene cuando nadie puede sostenerme, quien me complementa a la perfeccion, que impulso mientras me impulsa, con quien puedo, llorar, reir, dormir y ser feliz…</p>
+                    
+                    <p>porque en definitiva es eso lo que nos une yo creo. Lo dos de alguna manera somos parte de la felicidad del otro. Y la felicidad es un concepto filosofico abstracto para ser feliz no hace falta estar contento todo el tiempo, no hay una forma facil de definir la felicidad como no hay una forma facil de definir lo que me haces sentir.</p>
+                    
+                    <p>Pero el punto es que nos amamos y cuidamos. Te agradezco mucho por aparecerte en mi vida, yo creo que no fue aleatorio si te lo pones a pensar tuvieron que pasar muchas casualidades para que me aparezcas en la lista de seguidores de un random, te mande un mensaje, me muestres tus dibujitos y me enamoraras… fue el destino.</p>
+                    
+                    <p>Gracias mi vida no solo por eso, tambien por aguantarme, hacerme feliz, mimarme y en si ser el novio perfecto. Sos lo que toda mi adolescencia estuve buscando, alguien con whom comparitir todo, alguien MUY hermoso, que me trate bien, le guste hacer mis planes locos y de todo.</p>
+                    
+                    <p>Y aunque es un poco gliche no hay palabras suficientes para expresar lo que me haces sentir, Estos 8 meses fueron los mas especiales de mi vida con todos los momentos hermosos que vivimos juntos, los besitos, cada mimo, cada salida, cada respiro. Todo de vos me enamora cada día mas.</p>
+                    
+                    <p>bueno también le quería hacer un espacio especial a tu regalo en esta carta. Xq si hay algo que me encanto fue eso, yo creo que fue como si te hubieras tatuado un TE AMO en la frente, no puedo creer todo el esfuerzo que le pusiste pero senti cada te amo en eso, sobretodo en tu cartita, también en los detalles te fuiste acordando todo lo que me encanta y poniendo todo juento en una super sorpresa cuando sali de teatro fue increíble.</p>
+                    
+                    <p>A lo que voy es que TE amo mucho y vos me amas mucho también, creo que ambos lo notamos del otro yyyy <strong>ADORO QUE SEAS MI NOVIO</strong></p>
+                    
+                    <div class="letter-signature">
+                        Tu novio que tanto te ama, <strong>Augus.</strong><br>
+                        <strong>Felices 8 meses mi cielo.</strong><br>
+                        <strong>Ojala ese ocho se acueste y sean infinitos.</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="click-hint" id="clickHint">
+            Toca el sobre para abrir tu carta ❤️
+        </div>
+    </div>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+        const closeBtn = document.getElementById('closeBtn');
+        const heartsContainer = document.getElementById('heartsContainer');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        
+        let isOpen = false;
+        let isPlaying = false;
+        let audioInitialized = false;
+        
+        // Configurar audio
+        backgroundMusic.volume = 0.3;
+        
+        // Función para reproducir/pausar música
+        function toggleMusic() {
+            if (isPlaying) {
+                backgroundMusic.pause();
+                playPauseBtn.textContent = '🔇';
+                isPlaying = false;
+            } else {
+                backgroundMusic.play().then(() => {
+                    playPauseBtn.textContent = '🔊';
+                    isPlaying = true;
+                }).catch((error) => {
+                    console.log('Error al reproducir audio:', error);
+                    playPauseBtn.textContent = '⚠️';
+                });
+            }
+        }
+        
+        // Función para inicializar audio después de interacción del usuario
+        function initAudio() {
+            if (!audioInitialized) {
+                audioInitialized = true;
+                // Intenta reproducir y pausar inmediatamente para "despertar" el audio
+                backgroundMusic.play().then(() => {
+                    backgroundMusic.pause();
+                }).catch(() => {
+                    console.log('Audio no disponible');
+                });
+            }
+        }
+        
+        // Función para abrir/cerrar el sobre
+        function toggleEnvelope() {
+            if (!isOpen) {
+                envelope.classList.add('opened');
+                isOpen = true;
+                createFloatingHearts();
+                
+                // Inicializar e intentar reproducir música
+                initAudio();
+                if (!isPlaying) {
+                    setTimeout(() => {
+                        backgroundMusic.play().then(() => {
+                            playPauseBtn.textContent = '🔊';
+                            isPlaying = true;
+                        }).catch((error) => {
+                            console.log('No se pudo reproducir automáticamente:', error);
+                        });
+                    }, 500);
+                }
+            }
+        }
+        
+        // Función para cerrar el sobre
+        function closeEnvelope() {
+            envelope.classList.remove('opened');
+            isOpen = false;
+            heartsContainer.innerHTML = '';
+        }
+        
+        // Crear corazones flotantes
+        function createFloatingHearts() {
+            const hearts = ['💖', '💕', '💗', '💝', '❤️', '💘'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    heart.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                    heartsContainer.appendChild(heart);
+                    
+                    // Remover el corazón después de la animación
+                    setTimeout(() => {
+                        if (heart.parentNode) {
+                            heart.parentNode.removeChild(heart);
+                        }
+                    }, 8000);
+                }, i * 200);
+            }
+        }
+        
+        // Event listeners para móvil y desktop
+        function handleEnvelopeTouch(e) {
+            e.preventDefault();
+            if (e.target !== closeBtn && !e.target.closest('.close-btn')) {
+                toggleEnvelope();
+            }
+        }
+        
+        function handleCloseTouch(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeEnvelope();
+        }
+        
+        function handleMusicTouch(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            initAudio();
+            toggleMusic();
+        }
+        
+        // Eventos táctiles para móvil
+        envelope.addEventListener('touchend', handleEnvelopeTouch);
+        envelope.addEventListener('click', handleEnvelopeTouch);
+        
+        closeBtn.addEventListener('touchend', handleCloseTouch);
+        closeBtn.addEventListener('click', handleCloseTouch);
+        
+        playPauseBtn.addEventListener('touchend', handleMusicTouch);
+        playPauseBtn.addEventListener('click', handleMusicTouch);
+        
+        // Manejar eventos de audio
+        backgroundMusic.addEventListener('loadstart', function() {
+            console.log('Cargando audio...');
+        });
+        
+        backgroundMusic.addEventListener('canplay', function() {
+            console.log('Audio listo para reproducir');
+            if (playPauseBtn.textContent === '⚠️') {
+                playPauseBtn.textContent = '🎵';
+            }
+        });
+        
+        backgroundMusic.addEventListener('error', function(e) {
+            console.log('Error al cargar el archivo de audio:', e);
+            playPauseBtn.textContent = '❌';
+            playPauseBtn.title = 'Error: archivo de audio no encontrado';
+        });
+        
+        backgroundMusic.addEventListener('ended', function() {
+            // No debería pasar con loop, pero por si acaso
+            isPlaying = false;
+            playPauseBtn.textContent = '🔇';
+        });
+        
+        // Inicializar audio con cualquier interacción
+        document.addEventListener('touchstart', initAudio, { once: true });
+        document.addEventListener('click', initAudio, { once: true });
+        
+        // Mejorar responsividad táctil
+        envelope.style.webkitTapHighlightColor = 'transparent';
+        closeBtn.style.webkitTapHighlightColor = 'transparent';
+        playPauseBtn.style.webkitTapHighlightColor = 'transparent';
+        
+        // Crear algunos corazones iniciales
+        setTimeout(() => {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.textContent = '💕';
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    heart.style.animationDuration = '6s';
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => {
+                        if (heart.parentNode) {
+                            heart.parentNode.removeChild(heart);
+                        }
+                    }, 6000);
+                }, i * 1000);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
